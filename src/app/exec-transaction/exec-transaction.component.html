@@ -1,0 +1,172 @@
+<div *ngIf="transactionState$ | async as transactionState"
+    class="w-full rounded-2xl bg-white shadow-sm flex flex-col items-center p-8">
+    <div class="flex flex-col items-center"
+        *ngIf="(transactionState === 'PENDING') || (transactionState === 'PROCESSING')">
+        <div class="font-medium text-sky-700 uppercase text-sm tracking-wider flex flex-row items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
+            </svg>
+            <div class="ml-2 font-semibold"> Transaction request</div>
+        </div>
+        <div class="mt-6 text-sm text-center leading-6">
+            This is a request to execute a transaction <br> on <span class="font-medium text-sky-700">Optimism (Chain
+                ID: 10)</span> with the following details
+        </div>
+
+        <ng-component [ngTemplateOutlet]="txDetails"></ng-component>
+        
+
+        <button *ngIf="wallet$ | async; else plaseLogInMsg"
+                (click)="signAndDeployTransaction()" 
+                class="w-full rounded-full py-2 mt-6 font-medium hover:bg-sky-900 transition-all
+                text-xs uppercase text-white bg-sky-700 flex flex-row items-center justify-center
+              disabled:bg-gray-200 disabled:text-gray-700"
+                [disabled]="transactionState === 'PROCESSING'" 
+                [class.animate-pulse]="transactionState === 'PROCESSING'">
+
+            <div class="flex flex-row items-center">
+                <div class="flex flex-row items-center justify-center" *ngIf="transactionState === 'PROCESSING'; else buttonNotLoading">
+                    <app-spinner></app-spinner>
+                    <div class="ml-2">Processing transaction...</div>
+                </div>
+                <ng-template #buttonNotLoading>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                    </svg>
+                    <div class="ml-2">
+                        Sign & Deploy Transaction
+                    </div>
+                </ng-template>
+
+            </div>
+        </button>
+        <ng-template #plaseLogInMsg>
+            <div class="w-full py-2 bg-amber-50 rounded-lg flex font-medium
+            flex-row justify-center items-center mt-4 uppercase text-sm text-amber-700">
+                You must log-in to execute transactions
+            </div>
+        </ng-template>
+    </div>
+    <div class="flex flex-col items-center w-full" *ngIf="transactionState === 'FINISHED'">
+        <div *ngIf="txResponse$ | async as txResponse" class="text-sky-700 text-sm w-full">
+            <div class="w-full mt-10 font-semibold flex flex-row justify-center items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                  </svg>
+                  <div class="ml-2 uppercase">Transaction published to blockchain</div>
+                
+            </div>
+            <div class="flex flex-col rounded-lg mt-8">
+                <div class="flex flex-row items-center font-semibold text-sm uppercase text-sky-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
+                    </svg>
+    
+                    <div class="ml-2">Transacton hash</div>
+                </div>
+                <a target="_blank" [href]="'https://mumbai.polygonscan.com/tx/'+ txResponse.hash"
+                    class="text-xs text-gray-500 mt-1 underline">{{txResponse.hash}}</a>
+            </div>
+
+            <div class="flex flex-row items-center justify-center mt-4 text-sky-700 py-3 rounded-lg font-medium">
+                <app-spinner></app-spinner>
+                <div class="ml-4">Waiting for your transaction to be mined. This may take a while.</div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="flex flex-col items-center w-full" *ngIf="transactionState === 'MINED'">
+        <div class="flex flex-col" *ngIf="txReceipt$ | async as txReceipt">
+            <div class="font-semibold text-sky-700 text-sm uppercase flex flex-row justify-center items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>     
+                  <div class="ml-2">Transaction succesfully mined</div>             
+                  </div>
+            <div class="mt-4 font-semibold text-sm text-sky-700 uppercase">Block Hash</div>
+            <div class="text-xs mt-1">{{txReceipt.blockHash}}</div>
+            <div class="mt-3 font-semibold text-sm text-sky-700 uppercase">Block Number</div>
+            <div class="text-xs mt-1">{{txReceipt.blockNumber}}</div>
+            <div class="mt-3 font-semibold text-sm text-sky-700 uppercase">Gas Used</div>
+            <div class="text-xs mt-1">{{txReceipt.gasUsed}}</div>
+        </div>
+
+        <ng-component [ngTemplateOutlet]="txDetails"></ng-component>
+
+    </div>
+</div>
+
+<ng-template #txDetails>
+    <div class="p-4 bg-sky-50 rounded-lg flex flex-col w-full mt-4">
+
+        <!-- RECIPIENT -->
+        <div class="flex flex-row items-center text-sky-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="font-semibold ml-2  uppercase text-sm">Recipient: </div>
+            <div class="text-sm ml-1">0xc731816a02A08FC7Ed8fe73c82Ad04c0b018410E</div>
+        </div>
+        <div class="text-xs text-sky-500 mt-1">The receiving address (if an externally-owned account, the
+            transaction will transfer value. If a contract account, the transaction will execute the contract code)
+        </div>
+
+        <!-- VALUE -->
+        <div class="flex flex-row items-center text-sky-700 mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+            </svg>
+            <div class="font-semibold ml-2  uppercase text-sm">Value: </div>
+            <div class="text-sm ml-1">0.032 Wei</div>
+        </div>
+        <div class="text-xs text-sky-500 mt-1">
+            Amount of ETH being transferred. Denominated in Wei - a very small unit of ETH (1000000000000000000 Wei
+            = 1 ETH)
+        </div>
+
+        <!-- GAS -->
+        <div class="flex flex-row items-center text-sky-700 mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5" />
+            </svg>
+
+            <div class="font-semibold ml-2  uppercase text-sm">Gas Limit: </div>
+            <div class="text-sm ml-1">120000</div>
+        </div>
+        <div class="text-xs text-sky-500 mt-1">
+            The maximum amount of 'gas' units which can be spent by this transaction. This limits the maximum price
+            of the transaction.
+            This is usually set by the app you are using and shouldn't need changing.
+        </div>
+
+        <!-- GAS -->
+        <div class="flex flex-row items-center text-sky-700 mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+            </svg>
+
+
+            <div class="font-semibold ml-2  uppercase text-sm">Priority Fee: </div>
+            <div class="text-sm ml-1">4 Wei</div>
+        </div>
+        <div class="text-xs text-sky-500 mt-1">
+            How much you're willing to spend to prioritze your transcation. The higher this number, the quicker your
+            transaction will execute,
+            but it will be more expensive.
+        </div>
+    </div>
+</ng-template>
