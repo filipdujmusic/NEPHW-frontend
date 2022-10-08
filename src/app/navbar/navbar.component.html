@@ -8,7 +8,7 @@
                 class="text-sky-800 font-semibold text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center mr-4">
                 Address: <span class="normal-case font-normal ml-1">{{wallet.address}}</span>
             </div>
-            <div class=" text-sky-800 text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center">
+            <!-- <div class=" text-sky-800 text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -16,7 +16,7 @@
                 </svg>
                 <div><span class="ml-2 font-medium">Metamask</span>
                 </div>
-            </div>
+            </div> -->
             <div (click)="logOut()" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase px-8 py-3 hover:bg-sky-200
             cursor-pointer bg-sky-100 rounded-full flex flex-row items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="flex flex-row items-center gap-1" *ngIf="(navbarState$ | async) === 'OPTIONS_DISPLAYED'">
-        <div (click)="setNavbarState('CREATE')" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase px-8 py-3 hover:bg-sky-200
+        <div (click)="createWalletClicked()" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase px-8 py-3 hover:bg-sky-200
             cursor-pointer bg-sky-100 rounded-full flex flex-row items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -66,16 +66,16 @@
                 Import Wallet
             </div>
         </div>
-        <div (click)="setNavbarState('CONNECT')" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase px-8 py-3 hover:bg-sky-200
+        <!-- <div (click)="setNavbarState('CONNECT')" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase px-8 py-3 hover:bg-sky-200
             cursor-pointer bg-sky-100 rounded-full flex flex-row items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
               </svg>
               
             <div class="ml-2">
-                Connect Hardware Wallet
+                Connect Wallet
             </div>
-        </div>
+        </div> -->
         <div (click)="toggleLoginMenu()" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase py-3 px-3
          hover:bg-sky-200
             cursor-pointer bg-sky-100 rounded-full flex flex-row justify-center items-center">
@@ -96,6 +96,46 @@
         border hover:bg-sky-200 rounded-full ml-2">
             Import
         </button>
+
+        <div (click)="setNavbarState('LOGGED_OUT')" class="text-sky-800 ml-4 border-sky-200 border text-xs font-semibold uppercase py-3 px-3
+         hover:bg-sky-200
+            cursor-pointer bg-sky-100 rounded-full flex flex-row justify-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              
+        </div>
     </form>
 
+   
+
 </ng-template>
+
+<div *ngIf="seedPhrase$ | async as seedPhrase" class="w-screen h-screen fixed top-0 left-0 z-50 bg-black bg-opacity-25 flex flex-row items-center justify-center">
+    <div class="bg-white rounded-lg p-8 shadow-sm flex flex-col max-w-lg w-full">
+        <div (click)="closeCreateDialog()" class="w-full flex flex-row justify-end text-sky-700 hover:text-sky-900 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              
+        </div>
+        <div class="text-sky-700 text-sm uppercase mt-4 font-semibold">
+            Your Seed Phrase
+        </div>
+        <div class="text-sky-500 text-xs">
+            Your seed phrase represents your wallet. Copy it somewhere safe. Without your seed phrase, you will not be able to access your funds.
+        </div>
+        <div class="flex flex-row flex-wrap mt-4">
+            <div class=" text-sm" 
+            *ngFor="let phrase of seedPhrase">
+                <div class="text-sky-700 bg-sky-50 mr-1 mb-2 rounded-full py-1 px-4 border border-sky-200">
+                    {{phrase}}
+                </div>
+            </div>
+        </div>
+        <button (click)="submitSeedPhrase()" class="w-full bg-sky-700 rounded-full py-2 text-sm uppercase mt-4
+         flex flex-row items-center justify-center text-white hover:bg-sky-900">
+            I have copied my seed phrase
+        </button>
+    </div>
+</div>

@@ -20,6 +20,9 @@ export class NavbarComponent implements OnInit {
     })
   )
 
+  seedPhraseSub = new BehaviorSubject<string[] | undefined>(undefined)
+  seedPhrase$ = this.seedPhraseSub.asObservable()
+
   navbarStateSub = new BehaviorSubject<NavbarState>('LOGGED_OUT')
   navbarState$ = this.navbarStateSub.asObservable()
 
@@ -38,6 +41,18 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  closeCreateDialog() {
+    this.seedPhraseSub.next(undefined)
+  }
+
+  submitSeedPhrase() {
+    const mnemonic = this.seedPhraseSub.getValue()?.join(' ')
+    if(mnemonic) {
+      this.walletService.importWalletFromSeed(mnemonic)
+      this.closeCreateDialog()
+    }
+  }
+
   setNavbarState(newState: NavbarState) {
     this.navbarStateSub.next(newState)
   }
@@ -50,6 +65,10 @@ export class NavbarComponent implements OnInit {
     this.walletService.removeWallet()
   }
 
+  createWalletClicked() {
+    this.seedPhraseSub.next(this.walletService.createWallet().mnemonic.phrase.split(' '))
+  }
+
 }
 
-type NavbarState = "LOGGED_IN" | "LOGGED_OUT" | "OPTIONS_DISPLAYED" | "IMPORT" | "CREATE" | "CONNECT"
+type NavbarState = "LOGGED_IN" | "LOGGED_OUT" | "OPTIONS_DISPLAYED" | "IMPORT"

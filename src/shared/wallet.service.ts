@@ -24,6 +24,11 @@ export class WalletService {
         this.saveWallet(privateKey, network)
     }
 
+    importWalletFromSeed(mnemonic: string) {
+        const wallet = Wallet.fromMnemonic(mnemonic)
+        this.saveWallet(wallet.privateKey, "https://matic-mumbai.chainstacklabs.com")
+    }
+
     createWallet() {
         return Wallet.createRandom()
     }
