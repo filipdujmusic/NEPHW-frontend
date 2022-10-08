@@ -9,8 +9,8 @@ data for executing the blockchain transaction as well as optional metadata - e.g
 being executed on and the function call itself, etc...
 
 This transaction request is *non ephemeral* meaning it doens't 
-expire and can theoretically be executed mutliple times. This
-creates a lot of advantages in comparison to clasicall transaction environment. Some notable examples include:
+expire and can theoretically be executed multiple times. This
+creates a lot of advantages in comparison to clasical transaction execution environment. Some notable examples include:
 
 * **Organization transaction management**: One or a few people in the organization have Ledgers or access to master private keys. A lot more people are tasked with actually building transactions (e.g. payroll management - "accounting" creates transactions, management executes them). 
 * **Multi-device transaction management**: Each user can select their own way of getting transaction requests. If you have a wallet on your smartphone, but use Web3 on your PC - you can receive the transaction request through SMS, Email or other methods, execute it on the mobile phone and continue using your Web3 app on the PC
@@ -20,7 +20,7 @@ creates a lot of advantages in comparison to clasicall transaction environment. 
 
 The transaction requests are generated on the frontend and pinned to IPFS through Filecoin. The frontend for executing the transactions is hosted on IFPS. The format to execute the transaction is:
 
-ipfs://<frontend_hash>:<transaction_request_hash>
+ipfs://<frontend_hash>/<transaction_request_hash>
 
 ## Third party plugins
 
