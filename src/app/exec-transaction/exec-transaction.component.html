@@ -1,65 +1,86 @@
 <div *ngIf="transactionState$ | async as transactionState"
     class="w-full rounded-2xl bg-white shadow-sm flex flex-col items-center p-8">
-    <div class="flex flex-col items-center"
-        *ngIf="(transactionState !== 'MINED')">
+    <div class="flex w-full flex-col items-center">
         <div class="font-medium text-sky-700 uppercase text-sm tracking-wider flex flex-row items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
             </svg>
-            <div class="ml-2 font-semibold"> Transaction request</div>
-        </div>
-        <div class="mt-6 text-sm text-center leading-6">
-            This is a request to execute a transaction <br> on <span class="font-medium text-sky-700">Optimism (Chain
-                ID: 10)</span> with the following details
+            <div class="ml-2 font-semibold flex flex-row items-center"> 
+                Transaction request on
+                <img class="rounded-full w-6 h-6 mr-1 ml-2" src="https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco,dpr_1/w5f1qgwqhogag2olzmxi" alt="" srcset="">
+                <div class="flex flex-col">
+                <div>Optimism</div>
+            </div>
+            </div>
         </div>
 
         <ng-component [ngTemplateOutlet]="txDetails"></ng-component>
         
-        <div class="flex flex-col p-4 rounded-lg mt-4 text-sm bg-sky-50 w-full" *ngIf="transactionState === 'FINISHED'">
-            <div class="flex flex-col" *ngIf="txResponse$ | async as txResponse">
-                <div class="text-sky-700 font-semibold uppercase">Transaction published</div> 
-                <a class="text-sky-500 text-xs" [href]="'https://mumbai.polygonscan.com/tx/' + txResponse.hash">{{txResponse.hash}}</a> 
+        <div class="flex flex-row p-4 rounded-lg mt-4 text-sm bg-lime-50 w-full" *ngIf="txResponse$ | async as txResponse">
+            <div class="flex flex-row h-full items-center text-sky-700 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>                  
+            </div>
+            <div class="flex flex-col" >
+                <div class=" font-semibold uppercase">Transaction published</div> 
+                <a class="text-lime-500 underline text-xs" [href]="'https://mumbai.polygonscan.com/tx/' + txResponse.hash">{{txResponse.hash}}</a> 
             </div>
         </div>
 
-        <button *ngIf="wallet$ | async; else plaseLogInMsg"
-                (click)="signAndDeployTransaction()" 
-                class="w-full rounded-full py-2 mt-6 font-medium hover:bg-sky-900 transition-all
-                text-xs uppercase text-white bg-sky-700 flex flex-row items-center justify-center
-              disabled:bg-gray-200 disabled:text-gray-700"
-                [disabled]="transactionState !== 'PENDING'" 
-                [class.animate-pulse]="transactionState !== 'PENDING'">
-
-            <div class="flex flex-row items-center">
-
-                <div class="flex flex-row items-center justify-center" *ngIf="transactionState === 'PROCESSING'">
-                    <app-spinner></app-spinner>
-                    <div class="ml-2">Signing & publishing transaction...</div>
-                </div>
-
-                <div class="flex flex-row items-center" *ngIf="transactionState === 'PENDING'">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                    </svg>
-                    <div class="ml-2">
-                        Sign & Deploy Transaction
-                    </div>
-                </div>
-
-                <div class="flex flex-row items-center justify-center" *ngIf="transactionState === 'FINISHED'">
-                    <app-spinner></app-spinner>
-                    <div class="ml-2">Mining transaction...</div>
-                </div>
-
+        <div class="flex flex-row p-4 rounded-lg mt-4 text-sm bg-lime-50 w-full" *ngIf="txReceipt$ | async as txReceipt">
+            <div class="flex flex-row h-full items-center text-sky-700 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>                  
             </div>
-        </button>
+            <div class="flex flex-col" >
+                <div class=" font-semibold uppercase">Transaction mined</div> 
+                <a class="text-lime-500 underline text-xs" [href]="'https://mumbai.polygonscan.com/block/' + txReceipt.blockNumber">{{txReceipt.blockHash}}</a> 
+            </div>
+        </div>
+
+        <ng-container *ngIf="transactionState !== 'MINED'">
+            <button *ngIf="wallet$ | async; else plaseLogInMsg"
+            (click)="signAndDeployTransaction()" 
+            class="w-full rounded-full py-2 mt-6 font-medium hover:bg-sky-900 transition-all
+            text-xs uppercase text-white bg-sky-700 flex flex-row items-center justify-center
+          disabled:bg-gray-200 disabled:text-gray-700"
+            [disabled]="transactionState !== 'PENDING'" 
+            [class.animate-pulse]="transactionState !== 'PENDING'">
+
+        <div class="flex flex-row items-center">
+
+            <div class="flex flex-row items-center justify-center" *ngIf="transactionState === 'PROCESSING'">
+                <app-spinner></app-spinner>
+                <div class="ml-2">Signing & publishing transaction...</div>
+            </div>
+
+            <div class="flex flex-row items-center" *ngIf="transactionState === 'PENDING'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+                <div class="ml-2">
+                    Confirm & Excecute Transaction
+                </div>
+            </div>
+
+            <div class="flex flex-row items-center justify-center" *ngIf="transactionState === 'FINISHED'">
+                <app-spinner></app-spinner>
+                <div class="ml-2">Mining transaction...</div>
+            </div>
+
+        </div>
+    </button>
+        </ng-container>
+
         <ng-template #plaseLogInMsg>
-            <div class="w-full py-2 bg-amber-50 rounded-lg flex font-medium
-            flex-row justify-center items-center mt-4 uppercase text-sm text-amber-700">
+            <div class="w-full py-2 bg-gray-50 rounded-lg flex font-medium
+            flex-row justify-center items-center mt-4 uppercase text-sm text-gray-700">
                 You must log-in to execute transactions
             </div>
         </ng-template>
@@ -94,24 +115,7 @@
             
         </div>
     </div> -->
-    <div class="flex flex-col items-center w-full" *ngIf="transactionState === 'MINED'">
-        <div class="flex flex-col" *ngIf="txReceipt$ | async as txReceipt">
-            <div class="font-semibold text-sky-700 text-sm uppercase flex flex-row justify-center items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>     
-                  <div class="ml-2">Transaction succesfully mined</div>             
-                  </div>
-            <div class="mt-4 font-semibold text-sm text-sky-700 uppercase">Block Hash</div>
-            <div class="text-xs mt-1">{{txReceipt.blockHash}}</div>
-            <div class="mt-3 font-semibold text-sm text-sky-700 uppercase">Block Number</div>
-            <div class="text-xs mt-1">{{txReceipt.blockNumber}}</div>
-            <div class="mt-3 font-semibold text-sm text-sky-700 uppercase">Gas Used</div>
-            <div class="text-xs mt-1">{{txReceipt.gasUsed}}</div>
-        </div>
 
-
-    </div>
 </div>
 
 <ng-template #txDetails>
@@ -146,8 +150,22 @@
             = 1 ETH)
         </div>
 
+        <!-- DATA -->
+        <div class="flex flex-row overflow-x-scroll items-center text-sky-700 w-full mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              
+            <div class="font-semibold ml-2  uppercase text-sm">Data: </div>
+            <div class="text-sm flex flex-row ml-1 overflow-x-scroll w-full max-w-full">0xaosjdnalsjdoashflasjdlakjdklajdilalskdlaksnjakhsdliajksfdjamsjdlkajshdkjashjdlaiskjdaknsdhmkajsfjhaksldjkasdjhlaksjdkajshdlkasd</div>
+        </div>
+        <div class="text-xs text-sky-500 mt-1">
+            Amount of ETH being transferred. Denominated in Wei - a very small unit of ETH (1000000000000000000 Wei
+            = 1 ETH)
+        </div>
+
         <!-- GAS -->
-        <div class="flex flex-row items-center text-sky-700 mt-4">
+        <!-- <div class="flex flex-row items-center text-sky-700 mt-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -161,7 +179,7 @@
             The maximum amount of 'gas' units which can be spent by this transaction. This limits the maximum price
             of the transaction.
             This is usually set by the app you are using and shouldn't need changing.
-        </div>
+        </div> -->
 
         <!-- GAS -->
         <div class="flex flex-row items-center text-sky-700 mt-4">
@@ -172,13 +190,15 @@
             </svg>
 
 
-            <div class="font-semibold ml-2  uppercase text-sm">Priority Fee: </div>
-            <div class="text-sm ml-1">4 Wei</div>
+            <div class="font-semibold ml-2  uppercase text-sm">Priority</div>
         </div>
-        <div class="text-xs text-sky-500 mt-1">
-            How much you're willing to spend to prioritze your transcation. The higher this number, the quicker your
-            transaction will execute,
-            but it will be more expensive.
+        <div class="text-sm uppercase font-semibold text-sky-500 flex flex-row justify-between mt-2 gap-1">
+            <div class="w-1/3 flex border border-sky-200 py-1 cursor-pointer
+             hover:bg-sky-100 rounded-lg flex-row items-center justify-center">Low</div>
+            <div class="w-1/3 flex border border-sky-200 bg-sky-700 text-white py-1 cursor-pointer
+             hover:bg-sky-100 rounded-lg flex-row items-center justify-center">Medium</div>
+            <div class="w-1/3 flex border border-sky-200 py-1 cursor-pointer
+             hover:bg-sky-100 rounded-lg flex-row items-center justify-center">Instant</div>
         </div>
     </div>
 </ng-template>

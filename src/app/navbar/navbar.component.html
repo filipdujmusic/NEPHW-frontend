@@ -8,6 +8,10 @@
                 class="text-sky-800 font-semibold text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center mr-4">
                 Address: <span class="normal-case font-normal ml-1">{{wallet.address}}</span>
             </div>
+            <div *ngIf="gas$ | async as gas"
+                class="text-sky-800 font-semibold text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center mr-4">
+                Gas: <span class="normal-case font-normal ml-1">{{gas}}</span> <span class="ml-1">ETH</span>
+            </div>
             <!-- <div class=" text-sky-800 text-sm uppercase px-6 py-3 bg-sky-100 rounded-lg flex flex-row items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-4 h-4">
@@ -88,8 +92,8 @@
 
     <form class="flex flex-row items-center" *ngIf="(navbarState$ | async) === 'IMPORT'">
         <input [formControl]="importWalletForm"
-        class="w-64 rounded-lg border-sky-200 border py-3 text-sm px-4" 
-        placeholder="Paste private key here" type="text">
+        class="w-80 rounded-lg border-sky-200 border py-3 text-sm px-4" 
+        placeholder="Paste private key or seed phrase" type="text">
         <button (click)="importWalletClicked()" [disabled]="!importWalletForm.valid" 
         class="px-8 py-3 text-sm uppercase font-medium disabled:bg-gray-100
          text-sky-700 bg-sky-100 border-sky-200

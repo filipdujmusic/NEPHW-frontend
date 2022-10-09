@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { ethers } from 'ethers';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { WalletService } from 'src/shared/wallet.service';
 
@@ -26,7 +27,9 @@ export class NavbarComponent implements OnInit {
   navbarStateSub = new BehaviorSubject<NavbarState>('LOGGED_OUT')
   navbarState$ = this.navbarStateSub.asObservable()
 
-  importWalletForm = new FormControl('', [Validators.required, Validators.minLength(64), Validators.maxLength(64)])
+  gas$ = this.walletService.getBalance(this.walletService.wallet?.address ?? "")
+
+  importWalletForm = new FormControl('', [Validators.required, Validators.minLength(64)])
 
   constructor(private walletService: WalletService) { }
 
@@ -58,7 +61,14 @@ export class NavbarComponent implements OnInit {
   }
 
   importWalletClicked() {
-    this.walletService.importWallet(this.importWalletForm.value as string)
+    const value = this.importWalletForm.value as string
+    const splitValue = value.split(' ')
+
+    if(splitValue.length === 1) {
+      this.walletService.importWallet(value)
+    } else {
+      this.walletService.importWalletFromSeed(value)
+    }
   }
 
   logOut() {

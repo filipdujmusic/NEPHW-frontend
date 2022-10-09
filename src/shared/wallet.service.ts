@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { ethers, Wallet } from "ethers"
-import { BehaviorSubject, from, of } from "rxjs"
+import { BehaviorSubject, from, map, of } from "rxjs"
 
 @Injectable({
   providedIn: 'root',
@@ -51,6 +51,14 @@ export class WalletService {
         } else {
             return null
         }
+    }
+
+    getBalance(address: string) {
+        return from(this.wallet?.provider.getBalance(address) ?? of(undefined)).pipe(
+            map(balance => {
+                return ethers.utils.formatEther(balance ?? 0)
+            })
+        )
     }
 
 }
