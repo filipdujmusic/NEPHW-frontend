@@ -1,8 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
-import { BehaviorSubject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, from, Observable, switchMap, tap } from 'rxjs';
 import { SignerService } from 'src/shared/signer.service';
 import { WalletService } from 'src/shared/wallet.service';
+import { getTransactionFlow, TransactionRequest, setCompleted } from 'nephw-sdk'
+
+import { BigNumber } from 'ethers';
+import { Network, NetworkManager } from 'src/shared/networks';
+import { SequenceService } from 'src/shared/sequence.service';
 
 @Component({
   selector: 'app-exec-transaction',
@@ -22,24 +27,40 @@ export class ExecTransactionComponent implements OnInit {
 
   wallet$ = this.walletService.wallet$
 
-  constructor(private signerService: SignerService, private walletService: WalletService) { }
+  network: Network | undefined
+  txReqValue: string | undefined
+
+  @Input() txFinishedSub!: BehaviorSubject<string>
+
+  @Input() transactionRequest!: TransactionRequest
+  constructor(private signerService: SignerService, private sequenceService: SequenceService, private walletService: WalletService) { }
 
   ngOnInit(): void {
-    
+    const val = this.transactionRequest.tx.value as any
+    this.txReqValue = BigNumber.from(val).toString()
+
+    this.network = NetworkManager.networks[this.transactionRequest.tx.chainId!]
+    this.walletService.changeNetwork(this.network.rpc)
   }
 
   signAndDeployTransaction() {
     this.transactionStateSub.next("PROCESSING")
-    this.signerService.sendTransaction("0xc731816a02A08FC7Ed8fe73c82Ad04c0b018410E", 12)
+    this.signerService.sendPopulatedTx(this.transactionRequest.tx)
     .pipe(
       tap(res => {
         this.txResponseSub.next(res)
         this.transactionStateSub.next("FINISHED")  
       }),
-      switchMap(res => this.signerService.waitForTx(res?.hash ?? ""))
-    ).subscribe(res => {
-      this.transactionStateSub.next("MINED")
-      this.txReceiptSub.next(res)
+      switchMap(res => this.signerService.waitForTx(res?.hash ?? "")),
+      tap(res => {
+        this.transactionStateSub.next("MINED")
+        this.txReceiptSub.next(res)
+      }),
+      switchMap(res => {
+        return from(setCompleted(this.transactionRequest))
+      })
+    ).subscribe(completedCID => {
+      this.sequenceService.sequenceFinishedSub.next(this.sequenceService.sequenceFinishedSub.getValue() + 1)
     })
   }
 

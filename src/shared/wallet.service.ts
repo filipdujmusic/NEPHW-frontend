@@ -24,6 +24,11 @@ export class WalletService {
         this.saveWallet(privateKey, network)
     }
 
+    changeNetwork(network: string) {
+        const provider = new ethers.providers.JsonRpcProvider(network)
+        this.walletSub.next(new Wallet(this.wallet!.privateKey, provider))
+    }
+
     importWalletFromSeed(mnemonic: string) {
         const wallet = Wallet.fromMnemonic(mnemonic)
         this.saveWallet(wallet.privateKey, "https://matic-mumbai.chainstacklabs.com")

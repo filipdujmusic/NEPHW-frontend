@@ -1,7 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AppComponent } from './app.component';
+import { TxSequenceComponent } from './tx-sequence/tx-sequence.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: 'exec/:sequenceID', component: TxSequenceComponent }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

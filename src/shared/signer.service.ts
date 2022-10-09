@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core"
-import { ethers, Wallet } from "ethers"
+import { ethers, PopulatedTransaction, Wallet } from "ethers"
 import { BehaviorSubject, from, of } from "rxjs"
 import { WalletService } from "./wallet.service"
 
@@ -15,6 +15,18 @@ export class SignerService {
             to: to,
             value: value,
             chainId: 80001
+        }) ?? of(undefined))
+    }
+
+    sendPopulatedTx(tx: PopulatedTransaction) {
+        return from(this.walletService.wallet?.sendTransaction(tx) ?? of(undefined))
+    }
+
+    populateTransaction(to: string, value: number, chainID: number) {
+        return from(this.walletService.wallet?.populateTransaction({
+            to: to,
+            value: value,
+            chainId: chainID
         }) ?? of(undefined))
     }
 
