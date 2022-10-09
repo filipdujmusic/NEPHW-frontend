@@ -18,8 +18,8 @@ export class NetworkManager {
 
     private static polygon: Network = {
         chainID: 137,
-        shortname: "ethereum",
-        fullName: "Ethereum",
+        shortname: "polygon",
+        fullName: "Polygon",
         logoIcon: "https://cdn.iconscout.com/icon/free/png-256/polygon-token-4086725-3379855.png",
         nativeTokenName: "MATIC",
         rpc: 'https://matic-mainnet.chainstacklabs.com'

@@ -37,7 +37,7 @@ export class ExecTransactionComponent implements OnInit {
 
   ngOnInit(): void {
     const val = this.transactionRequest.tx.value as any
-    this.txReqValue = BigNumber.from(val).toString()
+    this.txReqValue = val
 
     this.network = NetworkManager.networks[this.transactionRequest.tx.chainId!]
     this.walletService.changeNetwork(this.network.rpc)

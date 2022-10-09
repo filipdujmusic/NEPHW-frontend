@@ -8,13 +8,14 @@ Instead of users executing a transaction directly - they first create a "transac
 data for executing the blockchain transaction as well as optional metadata - e.g. who created the transaction, decribing the contract
 being executed on and the function call itself, etc...
 
-This transaction request is *non ephemeral* meaning it doens't 
-expire and can theoretically be executed multiple times. This
-creates a lot of advantages in comparison to clasical transaction execution environment. Some notable examples include:
+This transaction request is 'pinned' to IPFS and can be opened by anyone through a compatible wallet. This frontend is a reference implementation of a compabtible wallet. In this case - both the frontend itself and the transaction requests are stored on IPFS - providing a properly decentralized solution.
+
+### Use cases
 
 * **Organization transaction management**: One or a few people in the organization have Ledgers or access to master private keys. A lot more people are tasked with actually building transactions (e.g. payroll management - "accounting" creates transactions, management executes them). 
 * **Multi-device transaction management**: Each user can select their own way of getting transaction requests. If you have a wallet on your smartphone, but use Web3 on your PC - you can receive the transaction request through SMS, Email or other methods, execute it on the mobile phone and continue using your Web3 app on the PC
-* **Transaction Chaining**: The transaction request doesn't have to be a single transaction. It can be a list of transactions which are executed one after another (e.g. Approve → Spend). This transfers the UX burden of handling multiple dependend or independent transactions to the wallet instead of the Web3 app - leading to much less repetition in handling these common aspects of Web3 life.
+* **Transaction Sequences**: The transaction request doesn't have to be a single transaction. It can be a list of transactions which are executed one after another (e.g. Approve → Spend). This transfers the UX burden of handling multiple dependend or independent transactions to the wallet instead of the Web3 app - leading to much less repetition in handling these common aspects of Web3 development.
+* **Cross-Chain TX Sequences**: Each request in the sequence can have its own network as a reference.
 
 ## Fully decentralized
 
